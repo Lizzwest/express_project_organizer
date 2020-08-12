@@ -18,6 +18,9 @@ router.post('/', (req, res) => {
   })
 })
 
+router.get('/new', (req, res) => {
+  res.render('projects/new')
+})
 
 router.post('/projects', (req, res) => {
   db.project.create({
@@ -35,14 +38,12 @@ router.post('/projects', (req, res) => {
 })
 
 // GET /projects/new - display form for creating a new project
-router.get('/new', (req, res) => {
-  res.render('projects/new')
-})
 
 
-router.get('/category', (req, res) => {
-  res.render('projects/category' , {test: "Lizz", project:{description: "say something"}})
-})
+
+// router.get('/category', (req, res) => {
+//   res.render('projects/category' , {test: "Lizz", project:{description: "say something"}})
+// })
 
 // GET /projects/new - display form for creating a new project
 router.get('/categories', (req, res) => {
@@ -60,7 +61,7 @@ router.get('/categories', (req, res) => {
   //res.render('projects/categories')
 })
  // GET /projects/new - display form for creating a new project
-router.get('/categories/:id', (req, res) => {
+ router.get('/categories/:id', (req, res) => {
   db.category.findOne({  
     where: { id: req.params.id}
   })
@@ -68,17 +69,29 @@ router.get('/categories/:id', (req, res) => {
     console.log(category)
     if (!category) throw Error()
 
-    // db.project.findAll({  
-    //   where: { id: req.params.id}
-    // })
-    // .then((project) => {
-    //   console.log(project)
-    //   if (!project) throw Error()
-    //   // res.render('projects/categories', { categories: categories })
-    // })
-    // .catch((error) => {
-    //   res.status(400).render('main/404')
-    // })
+    db.project.findAll({  
+      include: [db.category]
+    })
+    .then((projects) => {
+      // var items = projects.map(item => item.dataValues)
+      // items.map(data => { 
+      //   console.log("project:" + data.name)
+      //   data.categories.map( (category) => {
+      // 		console.log("category: " + category.name)
+      // 	})
+      // })
+      let projectWithCategory = projects.filter(item=>{
+        let theCategories = item.categories.map(item=>item.name)
+        return theCategories.includes(category.name)
+      })
+      
+      if (!projects) throw Error()
+      res.render('projects/categories-by-id', { category: category,  projects:projectWithCategory })
+    })
+    .catch((error) => {
+      res.status(400).render('main/404')
+
+    })
     // res.render('projects/categories', { categories: categories })
   })
   .catch((error) => {

@@ -69,7 +69,7 @@ var async = require('async')
 // })
 
 db.project.findOrCreate({
-  where: { name: 'Project Organizer' },
+  where: { name: " Another one" },
   default: { 
     githubLink: 'https://github.com/romebell/express_project_organizer',
     deployLink: 'https://github.com/romebell/express_project_organizer',
@@ -79,7 +79,7 @@ db.project.findOrCreate({
 .then(([project, created]) => {
    console.log(created);
    db.category.findOrCreate({
-     where: { name: 'microsoft' }
+     where: { name: 'node' }
    })
    .then(([category, created]) => {
       console.log(created);
